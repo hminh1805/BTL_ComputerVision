@@ -1,8 +1,8 @@
-from ImageLoader import ImageLoader
+# from ImageLoader import ImageLoader
 import cv2
 import numpy as np
-
-image_loader = ImageLoader()
+import matplotlib.pyplot as plt
+# image_loader = ImageLoader()
 
 def load_image(image_path):
     # img = image_loader.load_image(image_path)
@@ -21,4 +21,12 @@ def load_image(image_path):
     
     
 def rgb_to_gray(image: np.ndarray):
-    return cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+    if image is None:
+        raise ValueError("Ảnh đầu vào không hợp lệ.")
+    gray_channel = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+    return cv2.cvtColor(gray_channel, cv2.COLOR_GRAY2RGB)
+
+def show_image(img):
+    plt.imshow(img)
+    plt.axis("off")
+    plt.show()
