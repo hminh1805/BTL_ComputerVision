@@ -84,4 +84,30 @@ class ImageLoader:
             print(f"Error in rgb_to_gray: {e}")
             return None
 
+    def split_channels(self, img_obj):
+        """Split RGB image into R, G, B channels as separate grayscale images"""
+        try:
+            # Dùng NumPy slicing để cắt lớp cực nhanh
+            r_data = img_obj.data[:, :, 0]
+            g_data = img_obj.data[:, :, 1]
+            b_data = img_obj.data[:, :, 2]
+            
+            r_img = Image(f"R_{os.path.basename(img_obj.path)}", r_data)
+            g_img = Image(f"G_{os.path.basename(img_obj.path)}", g_data)
+            b_img = Image(f"B_{os.path.basename(img_obj.path)}", b_data)
+            
+            return r_img, g_img, b_img
+        except Exception as e:
+            return None, None, None
+
+    def merge_channels(self, r_img, g_img, b_img, output_name="merged_image.jpg"):
+        """Merge 3 grayscale images (channels) into 1 RGB image"""
+        try:
+            # np.dstack tự động xếp 3 ma trận 2D chồng lên nhau thành ma trận 3D
+            merged_data = np.dstack((r_img.data, g_img.data, b_img.data))
+            iio.imwrite(output_name, merged_data)
+            return Image(output_name, merged_data)
+        except Exception as e:
+            return None
+
     
