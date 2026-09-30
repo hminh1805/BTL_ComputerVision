@@ -1,10 +1,6 @@
 import os
 import imageio.v3 as iio
-from skimage import color
-from skimage.util import img_as_ubyte
 import numpy as np
-import matplotlib.pyplot as plt
-import math
 import mimetypes
 
 class Image:
@@ -32,8 +28,11 @@ class ImageLoader:
             
             # Đảm bảo dữ liệu luôn ở chuẩn 8-bit (0-255)
             if img_data.dtype != np.uint8:
-                img_data = img_as_ubyte(img_data)
-                 
+                img_data = img_data.astype(np.uint8)
+                
+            if img_data.ndim != 3 or img_data.shape[2] != 3:
+                raise ValueError("Ảnh đầu vào phải là ảnh RGB.")
+            
             return Image(file_path, img_data)
         except Exception as e:
             print(f"Error loading '{file_path}': {e}")
@@ -76,14 +75,51 @@ class ImageLoader:
             return []
 
     def rgb_to_gray(self, img_obj):
-        """Convert a color image to grayscale"""
+        """Convert RGB image to grayscale using luminance formula."""
         try:
-            gray_data = img_as_ubyte(color.rgb2gray(img_obj.data))
-            return Image(f"gray_{os.path.basename(img_obj.path)}", gray_data)
+            rgb = img_obj.data.astype(np.float32)
+
+            r = rgb[:, :, 0]
+            g = rgb[:, :, 1]
+            b = rgb[:, :, 2]
+
+            gray = 0.299 * r + 0.587 * g + 0.114 * b
+
+            gray = np.clip(gray, 0, 255).astype(np.uint8)
+
+            return Image(
+                f"gray_{os.path.basename(img_obj.path)}",
+                gray
+            )
+
         except Exception as e:
             print(f"Error in rgb_to_gray: {e}")
             return None
 
+    def gray_to_rgb(self, img_obj):
+        try:
+            gray = img_obj.data
+
+            if gray.ndim != 2:
+                raise ValueError("Input phải là ảnh grayscale.")
+
+            height, width = gray.shape
+
+            rgb = np.zeros((height, width, 3), dtype=np.uint8)
+
+            rgb[:, :, 0] = gray  # Red
+            rgb[:, :, 1] = gray  # Green
+            rgb[:, :, 2] = gray  # Blue
+
+            return Image(
+                f"rgb_{os.path.basename(img_obj.path)}",
+                rgb
+            )
+
+        except Exception as e:
+            print(f"Error in gray_to_rgb: {e}")
+            return None
+    
     def split_channels(self, img_obj):
         """Split RGB image into R, G, B channels as separate grayscale images"""
         try:
