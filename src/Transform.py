@@ -1,17 +1,28 @@
 import numpy as np
 import math
 import cv2
+from src.utils import preprocess_image
 
 class Transform:
     def __init__(self):
         self.recolor = 0 # màu nền khi đổi ảnh (đen)
         return
+
+    def _prepare_input(self, image):
+        img = preprocess_image(image, to_float32=False)
+        is_2d = (img.ndim == 2)
+        if is_2d:
+            img = img[:, :, np.newaxis]
+        return img, is_2d
+
+    def _postprocess_output(self, output, is_2d):
+        if is_2d and output.ndim == 3 and output.shape[2] == 1:
+            return output.squeeze(axis=2)
+        return output
     
-    
-    def translation(self, image,tx=0,ty=0):
+    def translation(self, image, tx=0, ty=0):
         "dịch ảnh theo vector (tx,ty)"
-        if image is None:
-            raise ValueError("Ảnh đầu vào không hợp lệ.")
+        image, is_2d = self._prepare_input(image)
         
         #copy ảnh gốc sang ảnh output
         output = image.copy()
@@ -32,16 +43,15 @@ class Transform:
             output[:-ty:,:,:] = output[ty:,:,:]
             output[-ty:,:,:] = self.recolor
         
-        return output
+        return self._postprocess_output(output, is_2d)
     
     def rotation(self, image, angle):
         "xoay ảnh theo góc angle"
-        if image is None:
-            raise ValueError("Ảnh đầu vào không hợp lệ.")
+        image, is_2d = self._prepare_input(image)
         
         height, width, channels = image.shape
         angle_rad = math.radians(angle)
-        output = image.copy()
+        output = np.full_like(image, self.recolor)
         #tâm ảnh
         x_center = int(width / 2)
         y_center = int(height / 2)
@@ -61,17 +71,14 @@ class Transform:
                 new_x += x_center
                 new_y += y_center
                 
-                if 0<= new_x < width and 0<= new_y < height:
-                    output[new_y,new_x,:] = image[y,x,:]
-                else:
-                    output[y,x,:] = self.recolor
+                if 0 <= new_x < width and 0 <= new_y < height:
+                    output[new_y, new_x, :] = image[y, x, :]
                     
-        return output
+        return self._postprocess_output(output, is_2d)
     
-    def rotation_v2(self,image,angle):
+    def rotation_v2(self, image, angle):
         "xoay ảnh theo góc "
-        if image is None:
-            raise ValueError("Ảnh đầu vào không hợp lệ.")
+        image, is_2d = self._prepare_input(image)
         
         height, width, channels = image.shape
         angle_rad = math.radians(angle)
@@ -93,12 +100,11 @@ class Transform:
                     output[y,x,:] = image[org_y + y_center,org_x + x_center,:]
                 else:
                     output[y,x,:] = self.recolor
-        return output
+        return self._postprocess_output(output, is_2d)
     
-    def scaling(self,image,scale_x=1.0,scale_y=1.0):
+    def scaling(self, image, scale_x=1.0, scale_y=1.0):
         "phóng to/thu nhỏ ảnh theo tỉ lệ scale_x, scale_y"
-        if image is None:
-            raise ValueError("Ảnh đầu vào không hợp lệ.")
+        image, is_2d = self._prepare_input(image)
         
         height, width, channels = image.shape
         output = image.copy()
@@ -118,14 +124,16 @@ class Transform:
                     output[y,x,:] = image[org_y,org_x,:]
                 else:
                     output[y,x,:] = self.recolor
-        return output
+        return self._postprocess_output(output, is_2d)
     
-    def affine(self,image, src_points, dst_points):
+    def affine(self, image, src_points, dst_points):
         """
         Thực hiện Affine transformation dựa trên 3 cặp điểm.
         src_points: Tọa độ 3 điểm trên ảnh gốc. Ví dụ: np.float32([[50,50], [200,50], [50,200]])
         dst_points: Tọa độ 3 điểm đích mong muốn.
         """
+        image, is_2d = self._prepare_input(image)
+        
         # 1. Dùng OpenCV để giải hệ 6 phương trình, tìm ra ma trận 2x3 chứa (a,b,c,d,e,f)
         affine_matrix = cv2.getAffineTransform(src_points, dst_points)
         
@@ -133,16 +141,18 @@ class Transform:
         height, width = image.shape[:2]
         output = cv2.warpAffine(image, affine_matrix, (width, height))
         
-        return output
+        return self._postprocess_output(output, is_2d)
 
-    def projective(self,image, src_points, dst_points):
+    def projective(self, image, src_points, dst_points):
         """
         Thực hiện Projective transformation dựa trên 4 cặp điểm.
         """
+        image, is_2d = self._prepare_input(image)
+        
         # 1. Dùng OpenCV để giải hệ 8 phương trình, tìm ra ma trận 3x3 (có chứa g, h)
         projective_matrix = cv2.getPerspectiveTransform(src_points, dst_points)
         
         # 2. Áp dụng ma trận biến đổi phối cảnh
         height, width = image.shape[:2]
         output = cv2.warpPerspective(image, projective_matrix, (width, height))
-        return output
+        return self._postprocess_output(output, is_2d)

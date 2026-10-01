@@ -1,34 +1,39 @@
-# Bỏ qua thư mục chứa ảnh (quan trọng để không làm nặng repo)
-data/
-
-# Bỏ qua các file rác của Python và Jupyter
+# Python byte-compiled / optimized files
 __pycache__/
 *.py[cod]
 *$py.class
+
+# Jupyter Notebook checkpoints
 .ipynb_checkpoints/
 
-# Bỏ qua môi trường ảo (nếu bạn có dùng)
+# Virtual Environments
 venv/
 .venv/
 env/
+ENV/
+env.bak/
+venv.bak/
 
-# Bỏ qua các file cấu hình của VS Code và hệ điều hành
-.vscode/
-.DS_Store
-Thumbs.db# Bỏ qua thư mục chứa ảnh (quan trọng để không làm nặng repo)
+# Output and Data directories
 data/
+*.jpg
+*.jpeg
+*.png
+*.bmp
 
-# Bỏ qua các file rác của Python và Jupyter
-__pycache__/
-*.py[cod]
-*$py.class
-.ipynb_checkpoints/
+# Exception: Allow test_sample folder and its images to be tracked by Git
+!test_sample/
+!test_sample/**
 
-# Bỏ qua môi trường ảo (nếu bạn có dùng)
-venv/
-env/
+# Exception for sample/template images if any needed (uncomment if applicable)
+# !data/sample.jpg
 
-# Bỏ qua các file cấu hình của VS Code và hệ điều hành
+# IDE & Editor files
 .vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
 .DS_Store
 Thumbs.db
