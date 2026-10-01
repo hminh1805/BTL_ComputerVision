@@ -709,7 +709,7 @@ class FilterTab(tk.Frame):
             row.pack(fill="x", pady=3)
             tk.Label(row, text="Kernel size:", font=FONT_NORMAL,
                      fg=TEXT_MED, bg=SIDEBAR, width=12, anchor="w").pack(side="left")
-            tk.Spinbox(row, from_=3, to=21, increment=2,
+            tk.Spinbox(row, from_=3, to=51, increment=2,
                        textvariable=self.kernel_var,
                        bg=CARD, fg=TEXT, font=FONT_NORMAL,
                        relief="solid", bd=1, width=5).pack(side="left")
@@ -719,7 +719,19 @@ class FilterTab(tk.Frame):
             row.pack(fill="x", pady=3)
             tk.Label(row, text="Sigma:", font=FONT_NORMAL,
                      fg=TEXT_MED, bg=SIDEBAR, width=12, anchor="w").pack(side="left")
-            tk.Spinbox(row, from_=0.1, to=20.0, increment=0.5, format="%.1f",
+            
+            def _sync_k(*_):
+                try:
+                    s = float(self.sigma_var.get())
+                    k_rec = max(3, int(2 * np.ceil(2 * s) + 1)) | 1
+                    if k_rec > self.kernel_var.get():
+                        self.kernel_var.set(k_rec)
+                except Exception:
+                    pass
+
+            self.sigma_var.trace_add("write", _sync_k)
+
+            tk.Spinbox(row, from_=0.1, to=30.0, increment=0.5, format="%.1f",
                        textvariable=self.sigma_var,
                        bg=CARD, fg=TEXT, font=FONT_NORMAL,
                        relief="solid", bd=1, width=5).pack(side="left")
