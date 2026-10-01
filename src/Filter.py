@@ -157,9 +157,11 @@ class Filter:
         return np.clip(res, 0, 255).astype(np.uint8)
 
     def gaussian_filter(self, image, kernel_size=3, sigma=1.0):
-        # Đảm bảo kích thước kernel tối thiểu bao quát được phân phối của sigma
-        calc_k = max(kernel_size, int(2 * np.ceil(2 * sigma) + 1)) | 1
-        g1d = self.gaussian_kernel_1d(calc_k, sigma)
+        if kernel_size % 2 == 0 or kernel_size < 3:
+            kernel_size = max(3, int(kernel_size) | 1)
+        if sigma <= 0:
+            sigma = 0.1
+        g1d = self.gaussian_kernel_1d(kernel_size, sigma)
         res = self._separable_convolution(image, g1d, g1d)
         return np.clip(res, 0, 255).astype(np.uint8)
 

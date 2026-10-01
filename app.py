@@ -709,32 +709,22 @@ class FilterTab(tk.Frame):
             row.pack(fill="x", pady=3)
             tk.Label(row, text="Kernel size:", font=FONT_NORMAL,
                      fg=TEXT_MED, bg=SIDEBAR, width=12, anchor="w").pack(side="left")
-            tk.Spinbox(row, from_=3, to=51, increment=2,
-                       textvariable=self.kernel_var,
-                       bg=CARD, fg=TEXT, font=FONT_NORMAL,
-                       relief="solid", bd=1, width=5).pack(side="left")
+            self.sp_kernel = tk.Spinbox(row, from_=3, to=51, increment=2,
+                                        textvariable=self.kernel_var,
+                                        bg=CARD, fg=TEXT, font=FONT_NORMAL,
+                                        relief="solid", bd=1, width=5)
+            self.sp_kernel.pack(side="left")
 
         if show_sigma:
             row = tk.Frame(self.param_frame, bg=SIDEBAR)
             row.pack(fill="x", pady=3)
             tk.Label(row, text="Sigma:", font=FONT_NORMAL,
                      fg=TEXT_MED, bg=SIDEBAR, width=12, anchor="w").pack(side="left")
-            
-            def _sync_k(*_):
-                try:
-                    s = float(self.sigma_var.get())
-                    k_rec = max(3, int(2 * np.ceil(2 * s) + 1)) | 1
-                    if k_rec > self.kernel_var.get():
-                        self.kernel_var.set(k_rec)
-                except Exception:
-                    pass
-
-            self.sigma_var.trace_add("write", _sync_k)
-
-            tk.Spinbox(row, from_=0.1, to=30.0, increment=0.5, format="%.1f",
-                       textvariable=self.sigma_var,
-                       bg=CARD, fg=TEXT, font=FONT_NORMAL,
-                       relief="solid", bd=1, width=5).pack(side="left")
+            self.sp_sigma = tk.Spinbox(row, from_=0.1, to=30.0, increment=0.5, format="%.1f",
+                                       textvariable=self.sigma_var,
+                                       bg=CARD, fg=TEXT, font=FONT_NORMAL,
+                                       relief="solid", bd=1, width=5)
+            self.sp_sigma.pack(side="left")
 
     def _on_filter_change(self):
         self._build_param_widgets()
@@ -764,17 +754,23 @@ class FilterTab(tk.Frame):
         if not self._cur_path or not os.path.exists(self._cur_path):
             return
 
-        # Đọc tham số trên luồng chính (Main thread) để đảm bảo an toàn thread và lấy giá trị mới nhất
+        # Đọc trực tiếp từ Spinbox widget trên luồng chính để đảm bảo nhận đúng giá trị mới nhất
         fv = self.filter_var.get()
         try:
-            ksize = int(self.kernel_var.get())
+            val = self.sp_kernel.get() if hasattr(self, "sp_kernel") and self.sp_kernel.winfo_exists() else self.kernel_var.get()
+            ksize = int(str(val).strip())
             if ksize % 2 == 0:
                 ksize += 1
+            if ksize < 3:
+                ksize = 3
         except Exception:
             ksize = 3
 
         try:
-            sigma = float(self.sigma_var.get())
+            val = self.sp_sigma.get() if hasattr(self, "sp_sigma") and self.sp_sigma.winfo_exists() else self.sigma_var.get()
+            sigma = float(str(val).strip().replace(',', '.'))
+            if sigma <= 0:
+                sigma = 0.1
         except Exception:
             sigma = 1.0
 
@@ -830,8 +826,16 @@ class FilterTab(tk.Frame):
             messagebox.showwarning("Chưa có danh sách", "Chọn ảnh / thư mục trước!")
             return
         fv       = self.filter_var.get()
-        ksize    = max(3, int(self.kernel_var.get()) | 1)
-        sigma    = float(self.sigma_var.get())
+        try:
+            val = self.sp_kernel.get() if hasattr(self, "sp_kernel") and self.sp_kernel.winfo_exists() else self.kernel_var.get()
+            ksize = max(3, int(str(val).strip()) | 1)
+        except Exception:
+            ksize = 3
+        try:
+            val = self.sp_sigma.get() if hasattr(self, "sp_sigma") and self.sp_sigma.winfo_exists() else self.sigma_var.get()
+            sigma = max(0.1, float(str(val).strip().replace(',', '.')))
+        except Exception:
+            sigma = 1.0
         out_dir  = self.io.get_output_dir()
         save_mode= self.io.get_save_mode()
         total    = len(self._img_paths)
