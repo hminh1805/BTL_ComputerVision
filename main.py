@@ -1,10 +1,12 @@
 from src.Transform import Transform
 import numpy as np
 from src.utils import load_image,show_image,rgb_to_gray
+from src.ImageLoader import ImageLoader
 
-img = load_image("data/pixel.png")
+il = ImageLoader()
+image = il.load_image("data/pixel.png")
+img = image.data if image is not None else None
 
-# img = rgb_to_gray(img)
 
 rows, cols = img.shape[:2]
 transform = Transform()
@@ -71,3 +73,26 @@ pts_dest = np.array([
 res_img = transform.projective(img,src_points=pts_source,dst_points=pts_dest)
 
 show_image(res_img)
+
+
+r,g,b = il.split_channels(img)
+r = il.gray_to_rgb(r)
+g = il.gray_to_rgb(g)
+b = il.gray_to_rgb(b)
+show_image(r)
+show_image(g)
+show_image(b)
+
+r,g,b = il.split_channels(img)
+
+merged_img = il.merge_channels(r,g,b)
+show_image(merged_img)
+
+merged_a = il.merge_channels(r,b,g)
+show_image(merged_a)
+
+merged_a = il.merge_channels(g,g,g)
+show_image(merged_a)
+
+merged_a = il.merge_channels(g,b,b)
+show_image(merged_a)
