@@ -543,15 +543,36 @@ class ColorTab(tk.Frame):
             if op == "grayscale":
                 out = self.loader.rgb_to_gray(img_obj)
                 result = out.data if out else None
+            # elif op == "channel_r":
+            #     r, g, b = self.loader.split_channels(img_obj)
+            #     result = r.data if r else None
+            # elif op == "channel_g":
+            #     r, g, b = self.loader.split_channels(img_obj)
+            #     result = g.data if g else None
+            # elif op == "channel_b":
+            #     r, g, b = self.loader.split_channels(img_obj)
+            #     result = b.data if b else None
             elif op == "channel_r":
                 r, g, b = self.loader.split_channels(img_obj)
-                result = r.data if r else None
+                if r:
+                    result = np.zeros_like(img_obj.data)
+                    result[:, :, 0] = r.data
+                else:
+                    result = None
             elif op == "channel_g":
                 r, g, b = self.loader.split_channels(img_obj)
-                result = g.data if g else None
+                if g:
+                    result = np.zeros_like(img_obj.data)
+                    result[:, :, 1] = g.data
+                else:
+                    result = None
             elif op == "channel_b":
                 r, g, b = self.loader.split_channels(img_obj)
-                result = b.data if b else None
+                if b:
+                    result = np.zeros_like(img_obj.data)
+                    result[:, :, 2] = b.data
+                else:
+                    result = None
             elif op == "swap_bgr":
                 r, g, b = self.loader.split_channels(img_obj)
                 sw = self.loader.merge_channels(b, g, r, output_name="_tmp_swap.jpg")
@@ -593,15 +614,36 @@ class ColorTab(tk.Frame):
                     if op == "grayscale":
                         out = self.loader.rgb_to_gray(img_obj)
                         res = out.data if out else None
+                    # elif op == "channel_r":
+                    #     r, _, _ = self.loader.split_channels(img_obj)
+                    #     res = r.data if r else None
+                    # elif op == "channel_g":
+                    #     _, g, _ = self.loader.split_channels(img_obj)
+                    #     res = g.data if g else None
+                    # elif op == "channel_b":
+                    #     _, _, b = self.loader.split_channels(img_obj)
+                    #     res = b.data if b else None
                     elif op == "channel_r":
                         r, _, _ = self.loader.split_channels(img_obj)
-                        res = r.data if r else None
+                        if r:
+                            res = np.zeros_like(orig)
+                            res[:, :, 0] = r.data
+                        else:
+                            res = None
                     elif op == "channel_g":
                         _, g, _ = self.loader.split_channels(img_obj)
-                        res = g.data if g else None
+                        if g:
+                            res = np.zeros_like(orig)
+                            res[:, :, 1] = g.data
+                        else:
+                            res = None
                     elif op == "channel_b":
                         _, _, b = self.loader.split_channels(img_obj)
-                        res = b.data if b else None
+                        if b:
+                            res = np.zeros_like(orig)
+                            res[:, :, 2] = b.data
+                        else:
+                            res = None
                     elif op == "swap_bgr":
                         r, g, b = self.loader.split_channels(img_obj)
                         sw = self.loader.merge_channels(b, g, r, output_name="_tmp.jpg")
