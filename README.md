@@ -36,6 +36,7 @@ Dự án được chia thành 3 mô-đun thực nghiệm chính:
 ├── app.py                # Tệp thực thi giao diện đồ họa (GUI) bằng Tkinter
 ├── main.py               # Tệp kịch bản chạy toàn bộ thực nghiệm (CLI)
 └── requirements.txt      # Danh sách các thư viện phụ thuộc
+```text
 🚀 Hướng dẫn cài đặt
 Khuyến nghị sử dụng môi trường ảo (Virtual Environment) để tránh xung đột thư viện.
 
