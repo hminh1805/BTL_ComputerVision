@@ -1,4 +1,4 @@
-# ⬡ Computer Vision Lab
+# ⬡ Computer Vision
 
 Đây là dự án môn học Xử lý ảnh (Computer Vision) tại Trường Đại học Bách Khoa - ĐHQG TP.HCM (HCMUT). 
 
@@ -49,7 +49,7 @@ Thao tác trên giao diện:
 
 Cửa sổ ứng dụng hiện lên với 3 Tab chức năng (Màu sắc, Lọc ảnh, Biến đổi).
 
-Tại phần Đầu vào (cột bên trái), nhấn nút 📁 Folder hoặc 📄 Ảnh để nạp hình ảnh từ máy tính (có thể chọn thư mục data/ có sẵn của dự án).
+Tại phần Đầu vào (cột bên trái), nhấn nút 📄 Ảnh để nạp hình ảnh từ máy tính (có thể chọn thư mục data/ có sẵn của dự án).
 
 Chọn phép toán và tinh chỉnh tham số tương ứng.
 
