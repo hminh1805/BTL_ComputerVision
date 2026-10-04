@@ -199,6 +199,36 @@ class ImageLoader:
             print(f"Error in replace_channels: {e}")
             return None
 
+    def blend_channels(self, channels, weights, output_name="blended_channel"):
+        """
+        Combine old channels to create new channels
+        """
+        try:
+            if not channels or not weights or len(channels) != len(weights):
+                raise ValueError("Danh sách kênh và trọng số phải bằng nhau và không được rỗng.")
+
+            # Lấy kích thước chuẩn từ kênh đầu tiên
+            base_shape = channels[0].data.shape
+            
+            # Khởi tạo ma trận trống (float32) để cộng dồn
+            blended_data = np.zeros(base_shape, dtype=np.float32)
+
+            # Lặp qua từng kênh và nhân với trọng số tương ứng
+            for ch_img, weight in zip(channels, weights):
+                if ch_img.data.shape != base_shape:
+                    raise ValueError("Tất cả các kênh phải có cùng kích thước.")
+                    
+                blended_data += ch_img.data.astype(np.float32) * weight
+
+            # Khóa dải giá trị 0-255 và ép kiểu về ảnh chuẩn
+            blended_data = np.clip(blended_data, 0, 255).astype(np.uint8)
+
+            return Image(output_name, blended_data)
+
+        except Exception as e:
+            print(f"Error in blend_channels: {e}")
+            return None
+
     @classmethod
     def load_image_data(cls, path, source="opencv"):
         """Load one image as an RGB/grayscale ndarray using the selected backend."""
