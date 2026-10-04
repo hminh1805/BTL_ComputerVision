@@ -39,16 +39,6 @@ Dự án được chia thành 3 mô-đun thực nghiệm chính:
 🚀 Hướng dẫn cài đặt
 Khuyến nghị sử dụng môi trường ảo (Virtual Environment) để tránh xung đột thư viện.
 
-Bước 1: Tải mã nguồn về máy
-
-Bash
-git clone [https://github.com/](https://github.com/)[Link-GitHub-Của-Bạn].git
-cd [Tên-Thư-Mục-Dự-Án]
-Bước 2: Cài đặt các thư viện cần thiết
-
-Bash
-pip install -r requirements.txt
-(Các thư viện chính bao gồm: numpy, opencv-python, pillow, imageio)
 
 💻 Hướng dẫn sử dụng
 Để trải nghiệm trực quan nhất, hãy khởi chạy ứng dụng GUI:
