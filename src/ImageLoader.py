@@ -171,6 +171,34 @@ class ImageLoader:
         except Exception as e:
             return None
 
+    def replace_channels(self, r_img=None, g_img=None, b_img=None, output_name="replaced_image.jpg"):
+        """
+        Merge channels randomly and if channels is None, its value is zeros
+        """
+        try:
+            # 1. Tìm kích thước chuẩn dựa trên một kênh bất kỳ có dữ liệu
+            valid_img = r_img or g_img or b_img
+            if valid_img is None:
+                raise ValueError("Phải truyền vào ít nhất 1 kênh màu hợp lệ.")
+                
+            height, width = valid_img.data.shape[0], valid_img.data.shape[1]
+            
+            # 2. Kiểm tra và thay thế bằng ma trận 0 nếu kênh bị thiếu
+            r_data = r_img.data if r_img is not None else np.zeros((height, width), dtype=np.uint8)
+            g_data = g_img.data if g_img is not None else np.zeros((height, width), dtype=np.uint8)
+            b_data = b_img.data if b_img is not None else np.zeros((height, width), dtype=np.uint8)
+            
+            merged_data = np.dstack((r_data, g_data, b_data))
+            
+            import imageio.v3 as iio
+            iio.imwrite(output_name, merged_data)
+            
+            return Image(output_name, merged_data)
+            
+        except Exception as e:
+            print(f"Error in replace_channels: {e}")
+            return None
+
     @classmethod
     def load_image_data(cls, path, source="opencv"):
         """Load one image as an RGB/grayscale ndarray using the selected backend."""
