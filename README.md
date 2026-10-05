@@ -46,8 +46,10 @@ Khuyến nghị sử dụng môi trường ảo (Virtual Environment) để trá
 
 Để trải nghiệm trực quan nhất, hãy khởi chạy ứng dụng GUI:
 
-Bash
+```Bash
 python app.py
+```
+
 Thao tác trên giao diện:
 
 Cửa sổ ứng dụng hiện lên với 3 Tab chức năng (Màu sắc, Lọc ảnh, Biến đổi).
