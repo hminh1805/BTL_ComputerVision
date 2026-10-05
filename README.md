@@ -37,11 +37,11 @@ Dự án được chia thành 3 mô-đun thực nghiệm chính:
 ├── main.py               # Tệp kịch bản chạy toàn bộ thực nghiệm (CLI)
 └── requirements.txt      # Danh sách các thư viện phụ thuộc
 ```
-🚀 Hướng dẫn cài đặt
+🚀 **Hướng dẫn cài đặt**
 Khuyến nghị sử dụng môi trường ảo (Virtual Environment) để tránh xung đột thư viện.
 
 
-💻 Hướng dẫn sử dụng
+💻 **Hướng dẫn sử dụng**
 Để trải nghiệm trực quan nhất, hãy khởi chạy ứng dụng GUI:
 
 Bash
